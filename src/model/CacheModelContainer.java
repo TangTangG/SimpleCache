@@ -6,13 +6,15 @@ public interface CacheModelContainer {
 
     CacheModel get(String key);
 
-    void remove(String key);
+    boolean remove(String key);
 
     void clear();
 
     void foreach(Accept accept);
 
     boolean exist(String key);
+
+    int size();
 
     CacheModel head();
 

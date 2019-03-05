@@ -10,6 +10,15 @@ public class CacheModel {
      */
     private Object data;
 
+    /**
+     * This is for Policy.
+     */
+    private volatile long lastAcessTime = 0L;
+
+    private volatile int acessCount = 0;
+
+    private volatile long validTime = 0L;
+
     @Override
     public boolean equals(Object obj) {
         return (obj instanceof CacheModel) && key != null && key.equals(((CacheModel) data).key);
