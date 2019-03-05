@@ -1,57 +1,87 @@
 package model;
 
-import java.util.Comparator;
+
+import util.Util;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MapContainer implements CacheModelContainer {
 
-    private final Comparator<CacheModel> comparator;
+    private final Object maprwLock = new Object();
     private final Map<String, CacheModel> container;
 
     public MapContainer() {
-        this.comparator = null;
-        this.container = new LinkedHashMap<>(16);
-    }
-
-    public MapContainer(Comparator<CacheModel> comparator) {
-        this.comparator = comparator;
         this.container = new LinkedHashMap<>(16);
     }
 
     @Override
     public void put(CacheModel model) {
-
+        if (model == null) {
+            return;
+        }
+        synchronized (maprwLock) {
+            container.put(model.key, model);
+        }
     }
 
     @Override
     public CacheModel get(String key) {
-        return null;
+        if (Util.strIsEmpty(key)) {
+            return null;
+        }
+        CacheModel result;
+        synchronized (maprwLock) {
+            result = container.get(key);
+        }
+        return result;
     }
 
     @Override
     public boolean remove(String key) {
-        return false;
+        if (Util.strIsEmpty(key)) {
+            return false;
+        }
+        CacheModel result;
+        synchronized (maprwLock) {
+            result = container.remove(key);
+        }
+        return result != null;
     }
 
     @Override
     public void clear() {
-
+        synchronized (maprwLock) {
+            container.clear();
+        }
     }
 
     @Override
     public void foreach(Accept accept) {
-
+        Set<Map.Entry<String, CacheModel>> entries = container.entrySet();
+        for (Map.Entry<String, CacheModel> entry : entries) {
+            if (accept.onModel(entry.getValue())) {
+                break;
+            }
+        }
     }
 
     @Override
     public boolean exist(String key) {
-        return false;
+        if (Util.strIsEmpty(key)) {
+            return false;
+        }
+        CacheModel result;
+        synchronized (maprwLock) {
+            result = container.get(key);
+        }
+        return result != null;
     }
 
     @Override
     public int size() {
-        return 0;
+        return container.size();
     }
 
     @Override

@@ -4,11 +4,11 @@ public class CacheModel {
     /**
      * This is the key of model.
      */
-    private String key;
+    public String key;
     /**
      * The data hold in memory.
      */
-    private Object data;
+    public Object data;
 
     /**
      * This is for Policy.
