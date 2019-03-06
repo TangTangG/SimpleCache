@@ -22,6 +22,7 @@ public class MapContainer implements CacheModelContainer {
             return;
         }
         synchronized (maprwLock) {
+            model.accessUpdate();
             container.put(model.key, model);
         }
     }
@@ -34,6 +35,9 @@ public class MapContainer implements CacheModelContainer {
         CacheModel result;
         synchronized (maprwLock) {
             result = container.get(key);
+        }
+        if (result != null){
+            result.accessUpdate();
         }
         return result;
     }
@@ -62,6 +66,7 @@ public class MapContainer implements CacheModelContainer {
         Set<Map.Entry<String, CacheModel>> entries = container.entrySet();
         for (Map.Entry<String, CacheModel> entry : entries) {
             if (accept.onModel(entry.getValue())) {
+                entry.getValue().accessUpdate();
                 break;
             }
         }
@@ -75,6 +80,9 @@ public class MapContainer implements CacheModelContainer {
         CacheModel result;
         synchronized (maprwLock) {
             result = container.get(key);
+        }
+        if (result != null){
+            result.accessUpdate();
         }
         return result != null;
     }

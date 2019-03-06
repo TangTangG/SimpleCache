@@ -58,6 +58,7 @@ public class LinkListContainer implements CacheModelContainer {
                 }
             }
         }
+        model.accessUpdate();
         size.getAndIncrement();
     }
 
@@ -89,7 +90,11 @@ public class LinkListContainer implements CacheModelContainer {
                 head = head.next;
             }
         }
-        return head == null ? null : head.data;
+        if (head != null) {
+            head.data.accessUpdate();
+            return head.data;
+        }
+        return null;
     }
 
     @Override
@@ -163,6 +168,7 @@ public class LinkListContainer implements CacheModelContainer {
         synchronized (linkrwLock) {
             while (head != null) {
                 if (compareNode(key, head)) {
+                    head.data.accessUpdate();
                     break;
                 }
                 head = head.next;
@@ -178,7 +184,11 @@ public class LinkListContainer implements CacheModelContainer {
 
     @Override
     public CacheModel head() {
-        return root == null ? null : root.data;
+        if (root != null) {
+            root.data.accessUpdate();
+            return root.data;
+        }
+        return null;
     }
 
     @Override
@@ -190,6 +200,7 @@ public class LinkListContainer implements CacheModelContainer {
         while (head.next != null) {
             head = head.next;
         }
+        head.data.accessUpdate();
         return head.data;
     }
 }

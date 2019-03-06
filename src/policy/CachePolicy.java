@@ -11,4 +11,6 @@ public interface CachePolicy {
 
     boolean filter(CacheModelContainer container);
 
+    boolean modelCheck(CacheModel model,CacheModelContainer container);
+
 }

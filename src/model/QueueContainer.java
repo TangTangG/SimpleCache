@@ -36,14 +36,15 @@ public class QueueContainer implements CacheModelContainer {
             } else if (comparator != null) {
                 putWithComparatorL(model);
             } else {
-                capacityCheck();
+                capacityCheckL();
                 container[size()] = model;
             }
+            model.accessUpdate();
             size.getAndIncrement();
         }
     }
 
-    private void capacityCheck() {
+    private void capacityCheckL() {
         final int length = size.get();
         if (container.length == length && length < MAX_CAPACITY) {
             int newCapacity = length << 1;
@@ -66,7 +67,7 @@ public class QueueContainer implements CacheModelContainer {
             }
             i++;
         }
-        capacityCheck();
+        capacityCheckL();
         if (i < length - 1) {
             System.arraycopy(container, i, container, i + 1, length - i - 1);
         }
@@ -77,7 +78,11 @@ public class QueueContainer implements CacheModelContainer {
     @Override
     public CacheModel get(String key) {
         int position = position(key);
-        return position < 0 ? null : container[position];
+        if (position >= 0) {
+            container[position].accessUpdate();
+            return container[position];
+        }
+        return null;
     }
 
     private int position(String key) {
@@ -115,15 +120,14 @@ public class QueueContainer implements CacheModelContainer {
 
     @Override
     public void clear() {
+        int i = size();
         synchronized (queueRWLock) {
-            int i = size();
-            synchronized (queueRWLock) {
-                while (i >= 0) {
-                    container[i] = null;
-                    i--;
-                }
-                container = new CacheModel[16];
+            while (i >= 0) {
+                container[i] = null;
+                i--;
             }
+            container = new CacheModel[16];
+            size.compareAndSet(0, 0);
         }
     }
 
@@ -133,6 +137,7 @@ public class QueueContainer implements CacheModelContainer {
         synchronized (queueRWLock) {
             while (i >= 0) {
                 if (accept.onModel(container[i])) {
+                    container[i].accessUpdate();
                     break;
                 }
                 i--;
@@ -142,7 +147,11 @@ public class QueueContainer implements CacheModelContainer {
 
     @Override
     public boolean exist(String key) {
-        return position(key) >= 0;
+        int position = position(key);
+        if (position >= 0) {
+            container[position].accessUpdate();
+        }
+        return position >= 0;
     }
 
     @Override
@@ -153,12 +162,20 @@ public class QueueContainer implements CacheModelContainer {
     @Override
     public CacheModel head() {
         int size = size();
-        return size > 0 ? container[0] : null;
+        if (size > 0) {
+            container[0].accessUpdate();
+            return container[0];
+        }
+        return null;
     }
 
     @Override
     public CacheModel tail() {
         int size = size();
-        return size > 0 ? container[size - 1] : null;
+        if (size > 0) {
+            container[size - 1].accessUpdate();
+            return container[size - 1];
+        }
+        return null;
     }
 }

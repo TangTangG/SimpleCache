@@ -13,11 +13,9 @@ public class CacheModel {
     /**
      * This is for Policy.
      */
-    private volatile long lastAcessTime = 0L;
+    public volatile long lastAccessTime = 0L;
 
-    private volatile int acessCount = 0;
-
-    private volatile long validTime = 0L;
+    public volatile int accessCount = 0;
 
     @Override
     public boolean equals(Object obj) {
@@ -27,6 +25,11 @@ public class CacheModel {
     @Override
     public int hashCode() {
         return key == null ? 0 : key.hashCode();
+    }
+
+    public synchronized void accessUpdate() {
+        lastAccessTime = System.nanoTime();
+        accessCount++;
     }
 
 }
