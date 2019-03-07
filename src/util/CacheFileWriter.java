@@ -14,11 +14,11 @@ public class CacheFileWriter {
 
     }
 
-    public void writer2File(String name, byte[] bytes) {
-
+    public File writer2File(String name, byte[] bytes) {
+        return null;
     }
 
-    public void writer2File(String name, InputStream stream) {
-
+    public File writer2File(String name, InputStream stream) {
+        return null;
     }
 }

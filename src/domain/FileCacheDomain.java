@@ -24,13 +24,20 @@ public class FileCacheDomain extends BaseCacheDomain {
         }
         final String fileName = Util.MD5(key);
         String name = Util.formatFileName(fileName, "0");
+        File cache = null;
         if (data instanceof InputStream) {
-            mWriter.writer2File(name, (InputStream) data);
+            cache = mWriter.writer2File(name, (InputStream) data);
         } else {
             byte[] bytes = data2ByteArray(data);
             if (bytes.length > 0) {
-                mWriter.writer2File(name, bytes);
+                cache = mWriter.writer2File(name, bytes);
             }
+        }
+        if (cache != null) {
+            CacheModel model = new CacheModel(key, data);
+            container.put(model);
+            model.accessUpdate();
+            cache.setLastModified(model.lastAccessTime);
         }
     }
 
