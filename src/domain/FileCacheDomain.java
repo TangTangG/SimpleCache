@@ -1,22 +1,65 @@
 package domain;
 
 import model.CacheModel;
-import util.FileWriter;
+import policy.CachePolicy;
+import util.CacheFileWriter;
+import util.Util;
 
+import java.io.*;
 import java.util.List;
 
 public class FileCacheDomain extends BaseCacheDomain {
 
-    private FileWriter mWriter;
+    private CacheFileWriter mWriter;
 
     FileCacheDomain(int features, long memoryLimit, String path) {
         super(features, memoryLimit);
-        mWriter = new FileWriter(path);
+        mWriter = new CacheFileWriter(path);
     }
 
     @Override
     public void put(String key, Object data) {
-        super.put(key, data);
+        if (data == null) {
+            return;
+        }
+        final String fileName = Util.MD5(key);
+        String name = Util.formatFileName(fileName, "0");
+        if (data instanceof InputStream) {
+            mWriter.writer2File(name, (InputStream) data);
+        } else {
+            byte[] bytes = data2ByteArray(data);
+            if (bytes.length > 0) {
+                mWriter.writer2File(name, bytes);
+            }
+        }
+    }
+
+    private byte[] data2ByteArray(Object data) {
+        if (data instanceof String) {
+            return ((String) data).getBytes();
+        } else if (data instanceof byte[]) {
+            return (byte[]) data;
+        } else if (data instanceof Serializable) {
+            Serializable value = (Serializable) data;
+            ByteArrayOutputStream baos;
+            ObjectOutputStream oos = null;
+            try {
+                baos = new ByteArrayOutputStream();
+                oos = new ObjectOutputStream(baos);
+                oos.writeObject(value);
+                return baos.toByteArray();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (oos != null) {
+                        oos.close();
+                    }
+                } catch (IOException e) {
+                }
+            }
+        }
+        return new byte[0];
     }
 
     @Override
@@ -31,17 +74,19 @@ public class FileCacheDomain extends BaseCacheDomain {
 
     @Override
     public CacheModel removeByPolicy() {
-        return super.removeByPolicy();
+        CacheModel remove = null;
+        for (CachePolicy p : policies) {
+            if ((remove = p.filter(container)) != null) {
+                break;
+            }
+        }
+        return remove;
+
     }
 
     @Override
     public void clear() {
         super.clear();
-    }
-
-    @Override
-    public void timeOut(long offset) {
-        super.timeOut(offset);
     }
 
     @Override

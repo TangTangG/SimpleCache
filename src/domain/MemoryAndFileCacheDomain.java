@@ -16,8 +16,15 @@ public class MemoryAndFileCacheDomain implements CacheDomain {
             //over flow,1Gb
             maxFileSize = 1024 * 1024 * 1024;
         }
-        fileCache = new FileCacheDomain(features, maxFileSize,filePath);
+        fileCache = new FileCacheDomain(features, maxFileSize, filePath);
         memoryCache = new MemoryCacheDomain(features, sizeLimit);
+        //First time sync data to memory.
+        if (fileCache.size() > 0) {
+            List<CacheModel> all = fileCache.getAll();
+            for (CacheModel m : all) {
+                memoryCache.put(m.storeKey, m.data);
+            }
+        }
         this.sync = sync;
     }
 

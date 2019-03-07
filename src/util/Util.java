@@ -33,7 +33,6 @@ public class Util {
         }
     }
 
-
     private static String bytes2Hex(byte[] bts) {
         String des = "";
         String tmp;
@@ -46,6 +45,10 @@ public class Util {
             des += tmp;
         }
         return des;
+    }
+
+    public static String formatFileName(String store,String accessCount){
+        return String.format("%s_%s",store,accessCount);
     }
 
 }
