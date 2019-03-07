@@ -15,15 +15,15 @@ public class QueueCachePolicy extends BaseCachePolicy {
     }
 
     @Override
-    public boolean filter(CacheModelContainer container) {
+    public CacheModel filter(CacheModelContainer container) {
         if (container == null) {
-            return false;
+            return null;
         }
         CacheModel firstIn = container.head();
         if (firstIn == null) {
-            return false;
+            return null;
         }
         container.remove(firstIn.key);
-        return true;
+        return firstIn;
     }
 }

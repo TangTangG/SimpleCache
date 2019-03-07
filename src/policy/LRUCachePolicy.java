@@ -23,15 +23,15 @@ public class LRUCachePolicy extends BaseCachePolicy {
     }
 
     @Override
-    public boolean filter(CacheModelContainer container) {
+    public CacheModel filter(CacheModelContainer container) {
         if (container == null) {
-            return false;
+            return null;
         }
         CacheModel least = container.tail();
         if (least == null) {
-            return false;
+            return null;
         }
         container.remove(least.key);
-        return true;
+        return least;
     }
 }

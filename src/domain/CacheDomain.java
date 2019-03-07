@@ -1,5 +1,7 @@
 package domain;
 
+import model.CacheModel;
+
 public interface CacheDomain {
 
     int POLICY_LRU = 1 << 1;
@@ -9,14 +11,21 @@ public interface CacheDomain {
 
     int MEMORY_ONLY = 1 << 5;
     int FILE_ONLY = 1 << 6;
-    int MEMORY_FILE = 1 << 7;
+    int MEMORY_FILE_ASYNC = 1 << 7;
+    int MEMORY_FILE_SYNC = 1 << 8;
 
     void put(String key, Object data);
 
     Object get(String key);
 
-    void remove(String key);
+    boolean remove(String key);
+
+    CacheModel removeByPolicy();
 
     void clear();
+
+    void timeOut(long offset);
+
+    void destroy();
 
 }

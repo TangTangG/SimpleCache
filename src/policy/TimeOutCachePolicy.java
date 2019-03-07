@@ -2,7 +2,6 @@ package policy;
 
 import model.CacheModel;
 import model.CacheModelContainer;
-import util.Util;
 
 import java.util.Comparator;
 
@@ -20,8 +19,8 @@ public class TimeOutCachePolicy extends BaseCachePolicy {
     }
 
     @Override
-    public boolean filter(CacheModelContainer container) {
-        return false;
+    public CacheModel filter(CacheModelContainer container) {
+        return null;
     }
 
     @Override
