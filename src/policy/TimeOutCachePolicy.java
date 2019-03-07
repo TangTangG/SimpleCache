@@ -29,7 +29,7 @@ public class TimeOutCachePolicy extends BaseCachePolicy {
             return false;
         }
         if (model.lastAccessTime + timeOut < System.nanoTime()) {
-            container.remove(model.key);
+            container.remove(model.storeKey);
             return false;
         }
         return true;

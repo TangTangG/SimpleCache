@@ -1,60 +1,66 @@
 package domain;
 
 import model.CacheModel;
+import util.FileWriter;
 
 import java.util.List;
 
-public class FileCacheDomain implements CacheDomain{
+public class FileCacheDomain extends BaseCacheDomain {
 
+    private FileWriter mWriter;
 
-
-    @Override
-    public void put(String key, Object data) {
-
+    FileCacheDomain(int features, long memoryLimit, String path) {
+        super(features, memoryLimit);
+        mWriter = new FileWriter(path);
     }
 
     @Override
-    public List<CacheModel> getAll() {
-        return null;
+    public void put(String key, Object data) {
+        super.put(key, data);
     }
 
     @Override
     public Object get(String key) {
-        return null;
+        return super.get(key);
     }
 
     @Override
     public boolean remove(String key) {
-        return false;
+        return super.remove(key);
     }
 
     @Override
     public CacheModel removeByPolicy() {
-        return null;
+        return super.removeByPolicy();
     }
 
     @Override
     public void clear() {
-
+        super.clear();
     }
 
     @Override
     public void timeOut(long offset) {
+        super.timeOut(offset);
+    }
 
+    @Override
+    public int size() {
+        return super.size();
+    }
+
+    @Override
+    public boolean clean() {
+        return super.clean();
+    }
+
+    @Override
+    public List<CacheModel> getAll() {
+        return super.getAll();
     }
 
     @Override
     public void destroy() {
 
-    }
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
-    public boolean clean() {
-        return false;
     }
 }

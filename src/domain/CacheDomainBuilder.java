@@ -8,9 +8,26 @@ public final class CacheDomainBuilder {
     private int policyTimeOut = 0;
     private int domainType = 0;
     private long timeOut = 0L;
+    /**
+     * Default size is 32Mb;
+     * The maximum file size is three times the size of the memory.
+     */
+    private long maxMemorySize = 1024 * 1024 * 32;
+
+    private String filePath = "/data/cache";
 
     public CacheDomainBuilder timeOut(long offset) {
         timeOut = offset;
+        return this;
+    }
+
+    public CacheDomainBuilder memoryMaxSize(long size) {
+        maxMemorySize = size;
+        return this;
+    }
+
+    public CacheDomainBuilder rootFilePath(String path) {
+        filePath = path;
         return this;
     }
 
@@ -74,19 +91,24 @@ public final class CacheDomainBuilder {
     public CacheDomain build() {
         int tag = Util.addFlag(0, policyTag | policyTimeOut);
         CacheDomain domain;
+        long maxFileSize = maxMemorySize * 3;
+        if (maxFileSize < 0) {
+            //over flow,1Gb
+            maxFileSize = 1024 * 1024 * 1024;
+        }
         switch (domainType) {
             case CacheDomain.FILE_ONLY:
-                domain = new FileCacheDomain(tag);
+                domain = new FileCacheDomain(tag, maxFileSize, filePath);
                 break;
             case CacheDomain.MEMORY_FILE_ASYNC:
-                domain = new MemoryAndFileCacheDomain(tag,false);
+                domain = new MemoryAndFileCacheDomain(tag, false, maxMemorySize, filePath);
                 break;
             case CacheDomain.MEMORY_FILE_SYNC:
-                domain = new MemoryAndFileCacheDomain(tag,true);
+                domain = new MemoryAndFileCacheDomain(tag, true, maxMemorySize, filePath);
                 break;
             case CacheDomain.MEMORY_ONLY:
             default:
-                domain = new MemoryCacheDomain(tag);
+                domain = new MemoryCacheDomain(tag, maxMemorySize);
         }
         domain.timeOut(timeOut);
         return domain;

@@ -23,7 +23,7 @@ public class QueueCachePolicy extends BaseCachePolicy {
         if (firstIn == null) {
             return null;
         }
-        container.remove(firstIn.key);
+        container.remove(firstIn.storeKey);
         return firstIn;
     }
 }

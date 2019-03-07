@@ -10,8 +10,13 @@ public class MemoryAndFileCacheDomain implements CacheDomain {
     private MemoryCacheDomain memoryCache;
     private final boolean sync;
 
-    MemoryAndFileCacheDomain(int features, boolean sync, long sizeLimit) {
-        fileCache = new FileCacheDomain(features);
+    MemoryAndFileCacheDomain(int features, boolean sync, long sizeLimit, String filePath) {
+        long maxFileSize = sizeLimit * 3;
+        if (maxFileSize < 0) {
+            //over flow,1Gb
+            maxFileSize = 1024 * 1024 * 1024;
+        }
+        fileCache = new FileCacheDomain(features, maxFileSize,filePath);
         memoryCache = new MemoryCacheDomain(features, sizeLimit);
         this.sync = sync;
     }
@@ -53,8 +58,8 @@ public class MemoryAndFileCacheDomain implements CacheDomain {
     @Override
     public CacheModel removeByPolicy() {
         CacheModel model = memoryCache.removeByPolicy();
-        if (model == null) {
-            model = fileCache.removeByPolicy();
+        if (model != null && sync) {
+            fileCache.remove(model.storeKey);
         }
         return model;
     }
@@ -78,7 +83,7 @@ public class MemoryAndFileCacheDomain implements CacheDomain {
             fileCache.clear();
             List<CacheModel> all = memoryCache.getAll();
             for (CacheModel model : all) {
-                fileCache.put(model.key, model.data);
+                fileCache.put(model.storeKey, model.data);
             }
         }
     }

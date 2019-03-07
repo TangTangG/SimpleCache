@@ -1,5 +1,7 @@
 package model;
 
+import util.Util;
+
 import java.io.File;
 
 public class CacheModel {
@@ -7,6 +9,10 @@ public class CacheModel {
      * This is the key of model.
      */
     public String key;
+    /**
+     * This is the MD5 key of model.Really store.
+     */
+    public String storeKey;
     /**
      * The data hold in memory.
      */
@@ -19,14 +25,20 @@ public class CacheModel {
 
     public volatile int accessCount = 0;
 
+    public CacheModel(String key, Object data) {
+        this.key = key;
+        this.storeKey = Util.MD5(key);
+        this.data = data;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        return (obj instanceof CacheModel) && key != null && key.equals(((CacheModel) data).key);
+        return (obj instanceof CacheModel) && storeKey != null && storeKey.equals(((CacheModel) data).storeKey);
     }
 
     @Override
     public int hashCode() {
-        return key == null ? 0 : key.hashCode();
+        return storeKey == null ? 0 : storeKey.hashCode();
     }
 
     public synchronized void accessUpdate() {

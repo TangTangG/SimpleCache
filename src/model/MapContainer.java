@@ -24,7 +24,7 @@ public class MapContainer implements CacheModelContainer {
         }
         synchronized (maprwLock) {
             model.accessUpdate();
-            container.put(model.key, model);
+            container.put(model.storeKey, model);
         }
     }
 

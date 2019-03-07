@@ -31,7 +31,7 @@ public class LRUCachePolicy extends BaseCachePolicy {
         if (least == null) {
             return null;
         }
-        container.remove(least.key);
+        container.remove(least.storeKey);
         return least;
     }
 }
