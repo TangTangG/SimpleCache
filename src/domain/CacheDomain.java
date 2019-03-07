@@ -2,6 +2,8 @@ package domain;
 
 import model.CacheModel;
 
+import java.util.List;
+
 public interface CacheDomain {
 
     int POLICY_LRU = 1 << 1;
@@ -16,6 +18,8 @@ public interface CacheDomain {
 
     void put(String key, Object data);
 
+    List<CacheModel> getAll();
+
     Object get(String key);
 
     boolean remove(String key);
@@ -27,5 +31,9 @@ public interface CacheDomain {
     void timeOut(long offset);
 
     void destroy();
+
+    int size();
+
+    boolean clean();
 
 }

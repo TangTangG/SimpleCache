@@ -178,4 +178,17 @@ public class QueueContainer implements CacheModelContainer {
         }
         return null;
     }
+
+    @Override
+    public long memorySize() {
+        long memory = 0L;
+        synchronized (queueRWLock) {
+            int i = size();
+            while (i >= 0) {
+                memory += container[i].size();
+                i--;
+            }
+        }
+        return memory;
+    }
 }

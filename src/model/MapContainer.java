@@ -3,6 +3,7 @@ package model;
 
 import util.Util;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +37,7 @@ public class MapContainer implements CacheModelContainer {
         synchronized (maprwLock) {
             result = container.get(key);
         }
-        if (result != null){
+        if (result != null) {
             result.accessUpdate();
         }
         return result;
@@ -81,7 +82,7 @@ public class MapContainer implements CacheModelContainer {
         synchronized (maprwLock) {
             result = container.get(key);
         }
-        if (result != null){
+        if (result != null) {
             result.accessUpdate();
         }
         return result != null;
@@ -90,6 +91,16 @@ public class MapContainer implements CacheModelContainer {
     @Override
     public int size() {
         return container.size();
+    }
+
+    @Override
+    public long memorySize() {
+        long memory = 0L;
+        Collection<CacheModel> cacheModels = container.values();
+        for (CacheModel m : cacheModels) {
+            memory += m.size();
+        }
+        return memory;
     }
 
     @Override

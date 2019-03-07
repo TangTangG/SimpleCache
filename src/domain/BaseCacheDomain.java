@@ -5,24 +5,50 @@ import model.CacheModelContainer;
 import policy.CachePolicy;
 import policy.TimeOutCachePolicy;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class BaseCacheDomain implements CacheDomain {
 
-    private final CacheModelContainer container;
-    private final List<CachePolicy> policies;
+    final CacheModelContainer container;
+    final List<CachePolicy> policies;
+    final long MAX_MEMORY_SIZE;
 
-    BaseCacheDomain(int features) {
-        container = CacheModelContainer.Factory.create().test(features);
+    BaseCacheDomain(int features, long memoryLimit) {
         policies = CachePolicy.Factory.create().test(features);
+        Comparator<CacheModel> c = null;
+        for (CachePolicy p : policies) {
+            if ((c = p.generateComparator()) != null) {
+                break;
+            }
+        }
+        container = CacheModelContainer.Factory.create().test(features, c);
+        MAX_MEMORY_SIZE = memoryLimit;
     }
 
     @Override
     public void put(String key, Object data) {
+        if (container.exist(key)) {
+            container.remove(key);
+        }
         CacheModel cacheModel = new CacheModel();
         cacheModel.key = key;
         cacheModel.data = data;
         container.put(cacheModel);
+    }
+
+    @Override
+    public List<CacheModel> getAll() {
+        final List<CacheModel> models = new ArrayList<>();
+        container.foreach(new CacheModelContainer.Accept() {
+            @Override
+            public boolean onModel(CacheModel model) {
+                models.add(model);
+                return false;
+            }
+        });
+        return models;
     }
 
     @Override
@@ -77,4 +103,29 @@ public abstract class BaseCacheDomain implements CacheDomain {
         timeOutCachePolicy.setTimeOut(offset);
     }
 
+    @Override
+    public int size() {
+        return container.size();
+    }
+
+    @Override
+    public boolean clean() {
+        long memoryCount = container.memorySize();
+        if (memoryCount < MAX_MEMORY_SIZE) {
+            return false;
+        }
+        CacheModel model = removeByPolicy();
+        if (model == null) {
+            //always be false,for logic.
+            CacheModel tail = container.tail();
+            if (tail != null) {
+                container.remove(tail.key);
+            }
+        }
+        //if remove one and memory still too large,clean again.
+        if (clean()) {
+            return clean();
+        }
+        return true;
+    }
 }

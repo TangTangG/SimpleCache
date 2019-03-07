@@ -26,7 +26,12 @@ public final class CacheDomainBuilder {
         }
     }
 
-    public CacheDomainBuilder plicyLRU() {
+    public CacheDomainBuilder policyType(int type) {
+        updatePolicy(type);
+        return this;
+    }
+
+    public CacheDomainBuilder policyLRU() {
         updatePolicy(CacheDomain.POLICY_LRU);
         return this;
     }
@@ -74,10 +79,10 @@ public final class CacheDomainBuilder {
                 domain = new FileCacheDomain(tag);
                 break;
             case CacheDomain.MEMORY_FILE_ASYNC:
-                domain = new MemoryAndFileCacheDomain(tag);
+                domain = new MemoryAndFileCacheDomain(tag,false);
                 break;
             case CacheDomain.MEMORY_FILE_SYNC:
-                domain = new MemoryAndFileCacheDomain(tag);
+                domain = new MemoryAndFileCacheDomain(tag,true);
                 break;
             case CacheDomain.MEMORY_ONLY:
             default:

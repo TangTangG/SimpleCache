@@ -3,6 +3,8 @@ package model;
 import domain.CacheDomain;
 import util.Util;
 
+import java.util.Comparator;
+
 public interface CacheModelContainer {
 
     void put(CacheModel model);
@@ -23,6 +25,8 @@ public interface CacheModelContainer {
 
     CacheModel tail();
 
+    long memorySize();
+
     interface Accept {
         boolean onModel(CacheModel model);
     }
@@ -33,13 +37,13 @@ public interface CacheModelContainer {
 
         }
 
-        public CacheModelContainer test(int tag) {
+        public CacheModelContainer test(int tag, Comparator<CacheModel> c) {
             if (Util.containsFlag(tag, CacheDomain.POLICY_FIFO)) {
-                return new QueueContainer();
+                return new QueueContainer(c);
             } else if (Util.containsFlag(tag, CacheDomain.POLICY_LFU)) {
-                return new QueueContainer();
+                return new QueueContainer(c);
             } else if (Util.containsFlag(tag, CacheDomain.POLICY_LRU)) {
-                return new LinkListContainer();
+                return new LinkListContainer(c);
             } else if (Util.containsFlag(tag, CacheDomain.POLICY_TIMEOUT)) {
                 return new MapContainer();
             } else {

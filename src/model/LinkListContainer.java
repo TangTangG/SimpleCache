@@ -203,4 +203,17 @@ public class LinkListContainer implements CacheModelContainer {
         head.data.accessUpdate();
         return head.data;
     }
+
+    @Override
+    public long memorySize() {
+        long memory = 0L;
+        CacheNode head = root;
+        synchronized (linkrwLock) {
+            while (head != null) {
+                memory += head.data.size();
+                head = head.next;
+            }
+        }
+        return memory;
+    }
 }

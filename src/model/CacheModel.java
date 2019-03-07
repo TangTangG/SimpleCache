@@ -1,5 +1,7 @@
 package model;
 
+import java.io.File;
+
 public class CacheModel {
     /**
      * This is the key of model.
@@ -30,6 +32,18 @@ public class CacheModel {
     public synchronized void accessUpdate() {
         lastAccessTime = System.nanoTime();
         accessCount++;
+    }
+
+    public long size() {
+        if (data instanceof String) {
+            return ((String) data).getBytes().length;
+        } else if (data instanceof File) {
+            return ((File) data).length();
+        } else if (data instanceof byte[]) {
+            return ((byte[]) data).length;
+        } else {
+            return 0L;
+        }
     }
 
 }
