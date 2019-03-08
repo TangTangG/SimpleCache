@@ -1,5 +1,6 @@
 package domain;
 
+import cache.SimpleCache;
 import util.Util;
 
 public final class CacheDomainBuilder {
@@ -91,6 +92,9 @@ public final class CacheDomainBuilder {
     public CacheDomain build() {
         int tag = Util.addFlag(0, policyTag | policyTimeOut);
         CacheDomain domain;
+        if ((domain = SimpleCache.getDomain(tag)) != null) {
+            return domain;
+        }
         long maxFileSize = maxMemorySize * 3;
         if (maxFileSize < 0) {
             //over flow,1Gb
@@ -111,6 +115,7 @@ public final class CacheDomainBuilder {
                 domain = new MemoryCacheDomain(tag, maxMemorySize);
         }
         domain.timeOut(timeOut);
+        SimpleCache.onDomain(tag, domain);
         return domain;
     }
 
