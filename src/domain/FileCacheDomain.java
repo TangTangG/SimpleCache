@@ -40,11 +40,15 @@ public class FileCacheDomain extends BaseCacheDomain {
 
     @Override
     public void put(String key, Object data) {
+        final String fileName = Util.MD5(key);
+        putMD5(fileName,data);
+    }
+
+    public void putMD5(String key, Object data) {
         if (data == null) {
             return;
         }
-        final String fileName = Util.MD5(key);
-        String name = Util.formatFileName(fileName, "0");
+        String name = Util.formatFileName(key, "0");
         File cache = null;
         if (data instanceof InputStream) {
             cache = mWriter.writer2File(name, (InputStream) data);

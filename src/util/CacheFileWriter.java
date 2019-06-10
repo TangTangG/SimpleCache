@@ -14,9 +14,11 @@ import java.io.InputStream;
 public class CacheFileWriter {
 
     private File cacheDir;
+    private String path;
     private static final String TEMP_FILE_PREFIX = "temp_";
 
     public CacheFileWriter(String tempPath) {
+        path = tempPath + "/";
         cacheDir = new File(tempPath);
         if (cacheDirCheck() && !cacheDir.mkdirs()) {
             //missing cache dir.
@@ -24,13 +26,13 @@ public class CacheFileWriter {
     }
 
     public File writer2File(String name, byte[] bytes) {
-        File tempFile = new File(TEMP_FILE_PREFIX + name);
+        File tempFile = new File(path + TEMP_FILE_PREFIX + name);
         File cache = null;
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(tempFile);
             out.write(bytes);
-            cache = new File(name);
+            cache = new File(path + name);
             tempFile.renameTo(cache);
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,7 +50,7 @@ public class CacheFileWriter {
     }
 
     public File writer2File(String name, InputStream stream) {
-        File tempFile = new File(TEMP_FILE_PREFIX + name);
+        File tempFile = new File(path + TEMP_FILE_PREFIX + name);
         File cache = null;
         FileOutputStream out = null;
         try {
@@ -58,7 +60,7 @@ public class CacheFileWriter {
             while ((len = stream.read(tmpBuf)) > 0) {
                 out.write(tmpBuf, 0, len);
             }
-            cache = new File(name);
+            cache = new File(path + name);
             tempFile.renameTo(cache);
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,7 +129,7 @@ public class CacheFileWriter {
     }
 
     public long countFileSize() {
-        if (cacheDirCheck()){
+        if (cacheDirCheck()) {
             return 0L;
         }
         long size = 0L;

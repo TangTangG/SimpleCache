@@ -90,7 +90,7 @@ public class MemoryAndFileCacheDomain implements CacheDomain {
             fileCache.clear();
             List<CacheModel> all = memoryCache.getAll();
             for (CacheModel model : all) {
-                fileCache.put(model.storeKey, model.data);
+                fileCache.putMD5(model.storeKey, model.data);
             }
         }
     }
