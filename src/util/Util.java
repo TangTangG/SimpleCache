@@ -1,6 +1,9 @@
 package util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.security.MessageDigest;
 
 public class Util {
@@ -65,6 +68,25 @@ public class Util {
             }
         }
         return dir.delete();
+    }
+
+    public static Object toObject(byte[] bytes){
+        Object object = null;
+        try {
+            // 创建ByteArrayInputStream对象
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            // 创建ObjectInputStream对象
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            // 从objectInputStream流中读取一个对象
+            object = objectInputStream.readObject();
+            byteArrayInputStream.close();// 关闭输入流
+            objectInputStream.close();// 关闭输入流
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return object;// 返回对象
     }
 
 }

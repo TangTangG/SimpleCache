@@ -21,7 +21,9 @@ public class FileCacheDomain extends BaseCacheDomain {
     }
 
     public CacheModel addL2Cache(String key, File data) {
+        //this key is storeKey
         CacheModel model = new CacheModel(key, data);
+        model.storeKey = key;
         container.put(model);
         model.accessUpdate();
         return model;
@@ -41,7 +43,7 @@ public class FileCacheDomain extends BaseCacheDomain {
     @Override
     public void put(String key, Object data) {
         final String fileName = Util.MD5(key);
-        putMD5(fileName,data);
+        putMD5(fileName, data);
     }
 
     public void putMD5(String key, Object data) {
@@ -104,6 +106,9 @@ public class FileCacheDomain extends BaseCacheDomain {
             mWriter.deleteFileStartWith(name);
             return null;
         }
+        if (model.data instanceof byte[]) {
+            return model.data;
+        }
         File file = (File) model.data;
         if (!file.exists()) {
             return null;
@@ -120,17 +125,17 @@ public class FileCacheDomain extends BaseCacheDomain {
     }
 
     private byte[] file2ByteArray(File file) {
-        if (file.exists()){
+        if (file.exists()) {
             RandomAccessFile raFile = null;
             try {
-                raFile = new RandomAccessFile(file,"r");
+                raFile = new RandomAccessFile(file, "r");
                 byte[] bytes = new byte[(int) file.length()];
                 raFile.read(bytes);
                 return bytes;
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                if (raFile != null){
+                if (raFile != null) {
                     try {
                         raFile.close();
                     } catch (IOException e) {

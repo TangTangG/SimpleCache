@@ -33,7 +33,7 @@ public abstract class BaseCacheDomain implements CacheDomain {
         if (container.exist(key)) {
             container.remove(key);
         }
-        CacheModel cacheModel = new CacheModel(key,data);
+        CacheModel cacheModel = new CacheModel(key, data);
         container.put(cacheModel);
     }
 
@@ -60,7 +60,7 @@ public abstract class BaseCacheDomain implements CacheDomain {
                 }
             }
         }
-        return model;
+        return model == null ? null : model.data;
     }
 
     @Override
