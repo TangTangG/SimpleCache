@@ -8,15 +8,15 @@ import java.security.MessageDigest;
 
 public class Util {
 
-    public static boolean strIsEmpty(String str){
+    public static boolean strIsEmpty(String str) {
         return str == null || "".equals(str);
     }
 
-    public static boolean containsFlag(int tag,int flag){
+    public static boolean containsFlag(int tag, int flag) {
         return (tag & flag) != 0;
     }
 
-    public static int addFlag(int tag,int flag){
+    public static int addFlag(int tag, int flag) {
         return (tag | flag);
     }
 
@@ -51,8 +51,8 @@ public class Util {
         return des;
     }
 
-    public static String formatFileName(String store,String accessCount){
-        return String.format("%s_%s",store,accessCount);
+    public static String formatFileName(String store, String accessCount) {
+        return String.format("%s_%s", store, accessCount);
     }
 
     public static boolean deleteDir(File dir) {
@@ -70,7 +70,7 @@ public class Util {
         return dir.delete();
     }
 
-    public static Object toObject(byte[] bytes){
+    public static Object toObject(byte[] bytes) {
         Object object = null;
         try {
             // 创建ByteArrayInputStream对象
